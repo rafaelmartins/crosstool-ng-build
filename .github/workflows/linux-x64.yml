@@ -26,6 +26,10 @@ jobs:
           repository: crosstool-ng/crosstool-ng
           ref: ${{ env.CROSSTOOL_NG_TAG }}
 
+      - name: Install dependencies
+        run: |
+          sudo apt install -y help2man
+
       - name: Build crosstool-ng
         run: |
           ./bootstrap
