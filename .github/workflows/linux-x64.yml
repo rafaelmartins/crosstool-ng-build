@@ -28,7 +28,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install -y help2man
+          sudo apt install -y help2man libtool-dev
 
       - name: Build crosstool-ng
         run: |
