@@ -37,3 +37,10 @@ jobs:
           make LDFLAGS="-all-static"
           make DESTDIR="$(pwd)/root" install
           tar -cvJf "${CROSSTOOL_NG_TAG}-${CROSSTOOL_NG_BUILD_REV}-linux-x64.tar.xz" -C root .
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "${{ env.CROSSTOOL_NG_TAG }}-${{ env.CROSSTOOL_NG_BUILD_REV }}-linux-x64.tar.xz"
+          tag: ${{ env.CROSSTOOL_NG_TAG }}
+          commit: ${{ github.sha }}
