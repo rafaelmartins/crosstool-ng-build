@@ -1,0 +1,35 @@
+name: Build crosstool-ng for linux-x64.
+
+on:
+  - push
+  - workflow_dispatch
+
+env:
+  CROSSTOOL_NG_TAG: crosstool-ng-1.25.0
+  CROSSTOOL_NG_BUILD_REV: 1
+
+concurrency:
+  group: linux-x64
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          repository: crosstool-ng/crosstool-ng
+          ref: ${{ env.CROSSTOOL_NG_TAG }}
+
+      - name: Build crosstool-ng
+        run: |
+          ./bootstrap
+          ./configure --prefix=/usr
+          make LDFLAGS="-all-static"
+          make DESTDIR="$(pwd)/root" install
+          tar -cvJf "${CROSSTOOL_NG_TAG}-${CROSSTOOL_NG_BUILD_REV}-linux-x64.tar.xz" -C root .
