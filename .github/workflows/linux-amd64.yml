@@ -1,9 +1,9 @@
-name: Build crosstool-ng for linux-x64.
+name: Build crosstool-ng for linux-amd64
 
 on:
   push:
     paths:
-      - '.github/workflows/linux-x64.yml'
+      - '.github/workflows/linux-amd64.yml'
   workflow_dispatch:
 
 env:
@@ -13,7 +13,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: linux-x64
+  group: linux-amd64
   cancel-in-progress: true
 
 defaults:
@@ -40,14 +40,14 @@ jobs:
           ./configure --prefix=/usr
           make LDFLAGS="-all-static"
           make DESTDIR="$(pwd)/root" install
-          tar -cvJf "${CROSSTOOL_NG_TAG}-linux-x64.tar.xz" -C root .
-          sha512sum "${CROSSTOOL_NG_TAG}-linux-x64.tar.xz" > "${CROSSTOOL_NG_TAG}-linux-x64.tar.xz.sha512"
+          tar -cvJf "${CROSSTOOL_NG_TAG}-linux-amd64.tar.xz" -C root .
+          sha512sum "${CROSSTOOL_NG_TAG}-linux-amd64.tar.xz" > "${CROSSTOOL_NG_TAG}-linux-amd64.tar.xz.sha512"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: crosstool-ng-linux-x64
-          path: "${{ env.CROSSTOOL_NG_TAG }}-linux-x64.tar.xz*"
+          name: crosstool-ng-linux-amd64
+          path: "${{ env.CROSSTOOL_NG_TAG }}-linux-amd64.tar.xz*"
 
   deploy:
     environment: releases
@@ -57,12 +57,12 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
-          name: crosstool-ng-linux-x64
+          name: crosstool-ng-linux-amd64
 
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "${{ env.CROSSTOOL_NG_TAG }}-linux-x64.tar.xz*"
+          artifacts: "${{ env.CROSSTOOL_NG_TAG }}-linux-amd64.tar.xz*"
           tag: ${{ env.CROSSTOOL_NG_TAG }}
           commit: ${{ github.sha }}
           allowUpdates: true
