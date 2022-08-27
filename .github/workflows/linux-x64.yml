@@ -43,10 +43,22 @@ jobs:
           tar -cvJf "${CROSSTOOL_NG_TAG}-linux-x64.tar.xz" -C root .
           sha512sum "${CROSSTOOL_NG_TAG}-linux-x64.tar.xz" > "${CROSSTOOL_NG_TAG}-linux-x64.tar.xz.sha512"
 
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: crosstool-ng-linux-x64
+          path: "${{ env.CROSSTOOL_NG_TAG }}-linux-x64.tar.xz*"
+
   deploy:
     environment: releases
     runs-on: ubuntu-22.04
+    needs: build
     steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: crosstool-ng-linux-x64
+
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
