@@ -1,8 +1,10 @@
 name: Build crosstool-ng for linux-x64.
 
 on:
-  - push
-  - workflow_dispatch
+  push:
+    paths:
+      - '.github/workflows/linux-x64.yml'
+  workflow_dispatch:
 
 env:
   CROSSTOOL_NG_TAG: crosstool-ng-1.25.0
@@ -41,6 +43,10 @@ jobs:
           tar -cvJf "${CROSSTOOL_NG_TAG}-linux-x64.tar.xz" -C root .
           sha512sum "${CROSSTOOL_NG_TAG}-linux-x64.tar.xz" > "${CROSSTOOL_NG_TAG}-linux-x64.tar.xz.sha512"
 
+  deploy:
+    environment: releases
+    runs-on: ubuntu-22.04
+    steps:
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
