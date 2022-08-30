@@ -41,7 +41,7 @@ jobs:
           if [[ ${CROSSTOOL_NG_REF} = crostool-ng-* ]]; then
             echo "::set-output name=name::${CROSSTOOL_NG_REF}"
           else
-            echo "::set-output name=name::$(git describe --abbrev=4 HEAD | sed -e 's/-/./' -e 's/-g/-/')"
+            echo "::set-output name=name::$(git describe --abbrev=4 HEAD | sed -e 's/\([0-9]\)-/\1./' -e 's/-g/-/')"
           fi
 
       - name: Store tarball name
