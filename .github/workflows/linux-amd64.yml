@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  CROSSTOOL_NG_TAG: crosstool-ng-1.25.0
+  CROSSTOOL_NG_REF: 3020aca6bb00e1d0a1cef3ab6d28b578c7df6520
 
 permissions:
   contents: write
@@ -28,11 +28,21 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: crosstool-ng/crosstool-ng
-          ref: ${{ env.CROSSTOOL_NG_TAG }}
+          ref: ${{ env.CROSSTOOL_NG_REF }}
+          fetch-depth: 0
 
       - name: Install dependencies
         run: |
           sudo apt install -y help2man libtool-bin
+
+      - name: Get tarball name
+        id: name
+        run: |
+          if [[ ${CROSSTOOL_NG_REF} = crostool-ng-* ]]; then
+            echo "::set-output name=name::${CROSSTOOL_NG_REF}"
+          else
+            echo "::set-output name=name::crosstool-ng-$(git describe --abbrev=4 HEAD | sed -e 's/^v//' -e 's/-/./' -e 's/-g/-/')"
+          fi
 
       - name: Build crosstool-ng
         run: |
@@ -40,14 +50,14 @@ jobs:
           ./configure --prefix=/usr
           make LDFLAGS="-all-static"
           make DESTDIR="$(pwd)/root" install
-          tar -cvJf "${CROSSTOOL_NG_TAG}-linux-amd64.tar.xz" -C root .
-          sha512sum "${CROSSTOOL_NG_TAG}-linux-amd64.tar.xz" > "${CROSSTOOL_NG_TAG}-linux-amd64.tar.xz.sha512"
+          tar -cvJf "${{ steps.name.outputs.name }}-linux-amd64.tar.xz" -C root .
+          sha512sum "${{ steps.name.outputs.name }}-linux-amd64.tar.xz" > "${{ steps.name.outputs.name }}-linux-amd64.tar.xz.sha512"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: crosstool-ng-linux-amd64
-          path: "${{ env.CROSSTOOL_NG_TAG }}-linux-amd64.tar.xz*"
+          path: "${{ steps.name.outputs.name }}-linux-amd64.tar.xz*"
 
   deploy:
     environment: releases
@@ -62,8 +72,8 @@ jobs:
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "${{ env.CROSSTOOL_NG_TAG }}-linux-amd64.tar.xz*"
-          tag: ${{ env.CROSSTOOL_NG_TAG }}
+          artifacts: "${{ steps.name.outputs.name }}-linux-amd64.tar.xz*"
+          tag: ${{ steps.name.outputs.name }}
           commit: ${{ github.sha }}
           allowUpdates: true
           removeArtifacts: true
