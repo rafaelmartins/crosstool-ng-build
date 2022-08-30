@@ -44,6 +44,10 @@ jobs:
             echo "::set-output name=name::crosstool-ng-$(git describe --abbrev=4 HEAD | sed -e 's/^v//' -e 's/-/./' -e 's/-g/-/')"
           fi
 
+      - name: Store tarball name
+        run: |
+          echo "${{ steps.name.outputs.name }}" > P
+
       - name: Build crosstool-ng
         run: |
           ./bootstrap
@@ -57,7 +61,9 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: crosstool-ng-linux-amd64
-          path: "${{ steps.name.outputs.name }}-linux-amd64.tar.xz*"
+          path: |
+            ${{ steps.name.outputs.name }}-linux-amd64.tar.xz*
+            P
 
   deploy:
     environment: releases
@@ -68,6 +74,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: crosstool-ng-linux-amd64
+
+      - name: Get tarball name
+        id: name
+        run: echo "::set-output name=name::$(cat P)"
 
       - name: Create release
         uses: ncipollo/release-action@v1
