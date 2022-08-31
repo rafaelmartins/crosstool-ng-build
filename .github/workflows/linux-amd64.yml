@@ -8,7 +8,7 @@ on:
 
 env:
   CROSSTOOL_NG_REPO: rafaelmartins/crosstool-ng
-  CROSSTOOL_NG_REF: b102cedd1aa82fe3ce8a6ce61e9df8e6903880fe
+  CROSSTOOL_NG_REF: fe595761641ac8f7b1bd55f6642fb671be66e70c
 
 permissions:
   contents: write
