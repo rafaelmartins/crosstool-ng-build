@@ -7,7 +7,8 @@ on:
   workflow_dispatch:
 
 env:
-  CROSSTOOL_NG_REF: 3020aca6bb00e1d0a1cef3ab6d28b578c7df6520
+  CROSSTOOL_NG_REPO: rafaelmartins/crosstool-ng
+  CROSSTOOL_NG_REF: b102cedd1aa82fe3ce8a6ce61e9df8e6903880fe
 
 permissions:
   contents: write
@@ -27,7 +28,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
         with:
-          repository: crosstool-ng/crosstool-ng
+          repository: ${{ env.CROSSTOOL_NG_REPO }}
           ref: ${{ env.CROSSTOOL_NG_REF }}
           fetch-depth: 0
 
