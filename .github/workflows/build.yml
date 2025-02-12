@@ -56,8 +56,16 @@ jobs:
           fi
 
       - name: Store tag name
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          echo "${{ steps.name.outputs.name }}" > P
+          echo "${{ steps.name.outputs.name }}" > name
+
+      - name: Upload tag name artifact
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: name
+          path: name
 
       - name: Get tarball os/arch
         id: os_arch
@@ -86,9 +94,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: crosstool-ng-${{ steps.os_arch.outputs.os_arch }}
-          path: |
-            ${{ steps.name.outputs.name }}-${{ steps.os_arch.outputs.os_arch }}.tar.xz*
-            P
+          path: ${{ steps.name.outputs.name }}-${{ steps.os_arch.outputs.os_arch }}.tar.xz*
 
   deploy:
     environment: releases
@@ -98,11 +104,11 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: crosstool-ng-*
+          merge-multiple: true
 
-      - name: Get tarball name
+      - name: Get tag name
         id: name
-        run: echo "name=$(cat P)" >> $GITHUB_OUTPUT
+        run: echo "name=$(cat name)" >> $GITHUB_OUTPUT
 
       - name: Create release
         uses: ncipollo/release-action@v1
