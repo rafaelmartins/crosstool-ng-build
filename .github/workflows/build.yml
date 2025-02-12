@@ -70,6 +70,7 @@ jobs:
 
       - name: Build crosstool-ng
         run: |
+          export PATH="/opt/homebrew/opt/binutils/bin:$PATH"
           ./bootstrap
           ./configure --prefix=/usr
           make LDFLAGS="-all-static"
