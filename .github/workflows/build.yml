@@ -44,7 +44,7 @@ jobs:
 
       - name: Install dependencies (MacOS)
         if: ${{ matrix.os == 'macos-latest' }}
-        run: brew install help2man texinfo
+        run: brew install bash gnu-sed help2man texinfo
 
       - name: Get tag name
         id: name
