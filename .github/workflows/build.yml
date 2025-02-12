@@ -49,7 +49,7 @@ jobs:
       - name: Get tag name
         id: name
         run: |
-          if [[ ${CROSSTOOL_NG_REF} = crostool-ng-* ]]; then
+          if [[ ${CROSSTOOL_NG_REF} = crosstool-ng-* ]]; then
             echo "name=${CROSSTOOL_NG_REF}" >> $GITHUB_OUTPUT
           else
             echo "name=$(git describe --abbrev=4 HEAD | sed -e 's/\([0-9]\)-/\1./' -e 's/-g/-/')" >> $GITHUB_OUTPUT
@@ -76,7 +76,11 @@ jobs:
           make LDFLAGS="-all-static"
           make DESTDIR="$(pwd)/root" install
           tar -cvJf "${{ steps.name.outputs.name }}-${{ steps.os_arch.outputs.os_arch }}.tar.xz" -C root .
-          sha512sum "${{ steps.name.outputs.name }}-${{ steps.os_arch.outputs.os_arch }}.tar.xz" > "${{ steps.name.outputs.name }}-${{ steps.os_arch.outputs.os_arch }}.tar.xz.sha512"
+          if [[ "${{ matrix.os }}" = ubuntu-* ]]; then
+            sha512sum "${{ steps.name.outputs.name }}-${{ steps.os_arch.outputs.os_arch }}.tar.xz" > "${{ steps.name.outputs.name }}-${{ steps.os_arch.outputs.os_arch }}.tar.xz.sha512"
+          else
+            gsha512sum "${{ steps.name.outputs.name }}-${{ steps.os_arch.outputs.os_arch }}.tar.xz" > "${{ steps.name.outputs.name }}-${{ steps.os_arch.outputs.os_arch }}.tar.xz.sha512"
+          fi
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
