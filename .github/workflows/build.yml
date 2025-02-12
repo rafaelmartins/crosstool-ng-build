@@ -44,7 +44,7 @@ jobs:
 
       - name: Install dependencies (MacOS)
         if: ${{ matrix.os == 'macos-latest' }}
-        run: brew install autoconf automake bash binutils gawk gnu-sed libtool help2man texinfo
+        run: brew install autoconf automake bash binutils coreutils gawk gnu-sed libtool help2man texinfo
 
       - name: Get tag name
         id: name
